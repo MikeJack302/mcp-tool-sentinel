@@ -1,0 +1,89 @@
+{
+  "protocolVersion": "2026-07-28",
+  "serverInfo": {"name": "treasury-mcp", "version": "2.4.0"},
+  "tools": [
+    {
+      "name": "lookup_invoice",
+      "title": "Lookup invoice",
+      "description": "Read one invoice from the approved treasury ledger.",
+      "inputSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "invoice_id": {
+            "type": "string",
+            "pattern": "^INV-[0-9]{4,12}$",
+            "description": "Approved invoice identifier."
+          },
+          "region": {
+            "type": "string",
+            "enum": ["us-east", "eu-west"],
+            "description": "Treasury processing region.",
+            "x-mcp-header": "Region"
+          }
+        },
+        "required": ["invoice_id", "region"],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "invoice_id": {"type": "string"},
+          "status": {"type": "string", "enum": ["pending", "approved", "paid"]},
+          "amount": {"type": "number"}
+        },
+        "required": ["invoice_id", "status", "amount"],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "submit_payment",
+      "title": "Submit payment",
+      "description": "Submit one approved invoice payment to the configured banking provider.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recipient": {
+            "type": "string",
+            "pattern": "^[A-Z0-9]{8,34}$",
+            "description": "Approved beneficiary account identifier."
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10000,
+            "description": "Payment amount in the selected currency."
+          },
+          "currency": {
+            "type": "string",
+            "enum": ["USD", "EUR"],
+            "description": "Settlement currency."
+          }
+        },
+        "required": ["recipient", "amount", "currency"],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "payment_id": {"type": "string"},
+          "status": {"type": "string", "enum": ["accepted", "rejected"]}
+        },
+        "required": ["payment_id", "status"],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    }
+  ]
+}
