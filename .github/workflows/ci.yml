@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: python -m pip install .
+      - name: Test
+        run: python -m unittest discover -s tests -v
+      - name: Compile
+        run: python -m compileall -q mcpsentinel
+      - name: Audit clean baseline
+        run: >-
+          mcp-tool-sentinel examples/baseline-snapshot.json
+          --policy examples/policy.json
+          --json-output baseline.out.json
+          --output baseline-report.html
+      - name: Exercise failing supply-chain example
+        run: >-
+          mcp-tool-sentinel examples/risky-snapshot.json
+          --baseline examples/baseline-snapshot.json
+          --policy examples/policy.json
+          --json-output risky.out.json
+          --sarif-output risky.sarif
+          --output risky-report.html
+          --no-fail

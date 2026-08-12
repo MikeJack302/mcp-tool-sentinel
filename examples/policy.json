@@ -1,0 +1,19 @@
+{
+  "allowed_protocol_versions": ["2026-07-28"],
+  "allowed_schema_dialects": [
+    "https://json-schema.org/draft/2020-12/schema",
+    "http://json-schema.org/draft-07/schema#"
+  ],
+  "allowed_header_names": ["Region"],
+  "allow_external_refs": false,
+  "allow_new_tools": false,
+  "require_descriptions": true,
+  "require_annotations": true,
+  "require_output_schema": false,
+  "require_closed_input_schema": true,
+  "block_prompt_injection": true,
+  "max_tools": 20,
+  "max_description_chars": 1200,
+  "max_schema_depth": 24,
+  "max_subschemas": 300
+}
