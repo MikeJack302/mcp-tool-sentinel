@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+build/
+*.egg-info/
+*.html
+*.sarif
+*.out.json
+*.png
+.edge-profile*/
+.DS_Store
